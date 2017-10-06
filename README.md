@@ -23,9 +23,9 @@ You can see the full help documentation output, with a full list of options, usi
     python marc2csv.py path/to/data.mrc --help
 
 ```
-usage: marc2csv.py [-h] [-v] [-n MAX_NUMBER_OF_RECORDS_TO_PROCESS]
-                   [--subfields-as-separate-columns] [--suppress-header-row]
-                   [-s SUBFIELD_SEPARATOR] [-o OUTPUT_FILE]
+usage: marc2csv.py [-h] [-a] [-n MAX_NUMBER_OF_RECORDS_TO_PROCESS]
+                   [-o OUTPUT_FILE] [-v] [--subfields-as-separate-columns]
+                   [-s SUBFIELD_SEPARATOR] [--suppress-header-row]
                    filepath
 
 Convert MARC records into CSV.
@@ -35,26 +35,30 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -v, --verbose         Increase verbosity of output.
+  -a, --append-to-output-file
+                        If set, an output file defined using the "--output-
+                        file" argument will be appended to, instead of
+                        overwritten.
   -n MAX_NUMBER_OF_RECORDS_TO_PROCESS, --max-number-of-records-to-process MAX_NUMBER_OF_RECORDS_TO_PROCESS
                         The maximum number of records that should be
                         processed. This can be useful for debugging or
                         otherwise exploring a dataset. Default: (Infinite)
+  -o OUTPUT_FILE, --output-file OUTPUT_FILE
+                        The file to save output to. Default: stdout (i.e., the
+                        console output)
+  -v, --verbose         Increase verbosity of output.
   --subfields-as-separate-columns
                         If set, columns will be broken down into MARC
                         subfields Otherwise, MARC fields will be concatenated
                         with each other, using the "subfield_separator"
                         argument.
-  --suppress-header-row
-                        If set, no CSV header row (put differently, no column
-                        names) will be included in the output.
   -s SUBFIELD_SEPARATOR, --subfield-separator SUBFIELD_SEPARATOR
                         If "--subfields-as-separate-columns" is not set, the
                         separator used when concatenating MARC subfield values
                         together. Default: ";"
-  -o OUTPUT_FILE, --output-file OUTPUT_FILE
-                        The file to save output to. Default: stdout (i.e., the
-                        console output)
+  --suppress-header-row
+                        If set, no CSV header row (put differently, no column
+                        names) will be included in the output.
 ```
 
 If you have multiple MARC files to convert, you can either use the included
@@ -63,6 +67,11 @@ i.e.
 
     cat data1.mrc data2.mrc data3.mrc > data.mrc
     python marc2csv.py data.mrc > data.csv
+
+Or, you could use the `-a` / `--append-to-output-file` option, like this:
+
+    python marc2csv.py data1.mrc --output-file example.csv
+    python marc2csv.py data2.mrc --output-file example.csv --append-to-output-file --suppress-header-row
 
 If you see warning messages such as this:
 
