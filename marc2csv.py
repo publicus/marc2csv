@@ -81,7 +81,7 @@ for marc_record in reader:
                 logging.debug("Processing each MARC subfield in the same column...")
                 if marc_field.tag not in marc_tags:
                     marc_tags.append(marc_field.tag)
-                csv_record[marc_field.tag] = parsed_arguments.subfield_separator.join(marc_field.value().strip())
+                csv_record[marc_field.tag] = parsed_arguments.subfield_separator.join([subfield_value[1].strip() for subfield_value in list(marc_field)])
         csv_records.append(csv_record)
         
         record_number = record_number + 1
