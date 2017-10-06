@@ -1,6 +1,6 @@
 # marc2csv
 
-`marc2csv` - A command-line tool to convert a MARC file to a CSV file.
+`marc2csv` - A command-line tool to convert a MARC file to a CSV file. Now for Python3 and with command-line arguments! 
 
 ## Overview
 
