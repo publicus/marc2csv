@@ -6,11 +6,9 @@ marc2csv - command-line tool to convert a MARC file to an Excel-ready CSV file.
 Overview
 --------
 
-This is a very simple command-line tool built for Unix-like (POSIX) systems.
-Potentially runs on Windows, but is only tested on GNU/Linux.
-Requires Python and pymarc.
-
-http://pypi.python.org/pypi/pymarc
+This is a simple command-line tool built for Unix-like (POSIX) systems.
+It potentially runs on Windows (for example, with [Git BASH](https://git-for-windows.github.io/)), but has only been tested using Linux.
+It requires Python3 and [pymarc](http://pypi.python.org/pypi/pymarc).
 
 A batch script for GNU bash is also included.
 
@@ -19,10 +17,45 @@ Usage
 
     python marc2csv.py path/to/data.mrc
 
-Where path/to/data.mrc is the marc file you'd like to convert.  CSV is printed
-to stdout.  To create a CSV file, simply:
+Where path/to/data.mrc is the marc file you'd like to convert.
+You can see the full help documentation output, with a full list of options, using the `--help` flag, like this:
 
-    python marc2csv.py path/to/data.mrc > data.csv
+    python marc2csv.py path/to/data.mrc --help
+
+```
+usage: marc2csv.py [-h] [-v] [-n MAX_NUMBER_OF_RECORDS_TO_PROCESS]
+                   [--subfields-as-separate-columns] [--suppress-header-row]
+                   [-s SUBFIELD_SEPARATOR] [-o OUTPUT_FILE]
+                   filepath
+
+Convert MARC records into CSV.
+
+positional arguments:
+  filepath              The MARC file to process.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --verbose         Increase verbosity of output.
+  -n MAX_NUMBER_OF_RECORDS_TO_PROCESS, --max-number-of-records-to-process MAX_NUMBER_OF_RECORDS_TO_PROCESS
+                        The maximum number of records that should be
+                        processed. This can be useful for debugging or
+                        otherwise exploring a dataset. Default: (Infinite)
+  --subfields-as-separate-columns
+                        If set, columns will be broken down into MARC
+                        subfields Otherwise, MARC fields will be concatenated
+                        with each other, using the "subfield_separator"
+                        argument.
+  --suppress-header-row
+                        If set, no CSV header row (put differently, no column
+                        names) will be included in the output.
+  -s SUBFIELD_SEPARATOR, --subfield-separator SUBFIELD_SEPARATOR
+                        If "--subfields-as-separate-columns" is not set, the
+                        separator used when concatenating MARC subfield values
+                        together. Default: ";"
+  -o OUTPUT_FILE, --output-file OUTPUT_FILE
+                        The file to save output to. Default: stdout (i.e., the
+                        console output)
+```
 
 If you have multiple MARC files to convert, you can either use the included
 marc2csv_batch bash script, or concatenate all of your MARC files into one,

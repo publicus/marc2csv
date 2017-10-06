@@ -11,10 +11,14 @@ import math
 
 argument_parser = argparse.ArgumentParser(description='Convert MARC records into CSV.')
 
-argument_parser.add_argument("-v",
-                             "--verbose",
-                             action="store_true",
-                             help="Increase verbosity of output.")
+argument_parser.add_argument('filepath',
+                             action='store',
+                             help='The MARC file to process.')
+
+argument_parser.add_argument('-a',
+                             '--append-to-output-file',
+                             action='store_true',
+                             help='If set, an output file defined using the "--output-file" argument will be appended to, instead of overwritten.')
 
 argument_parser.add_argument('-n', 
                              '--max-number-of-records-to-process',
@@ -22,13 +26,19 @@ argument_parser.add_argument('-n',
                              help='The maximum number of records that should be processed. This can be useful for debugging or otherwise exploring a dataset. Default: (Infinite)',
                              default=math.inf)
 
+argument_parser.add_argument('-o',
+                             '--output-file',
+                             action='store',
+                             help='The file to save output to. Default: stdout (i.e., the console output)')
+
+argument_parser.add_argument("-v",
+                             "--verbose",
+                             action="store_true",
+                             help="Increase verbosity of output.")
+
 argument_parser.add_argument('--subfields-as-separate-columns',
                              action='store_true',
                              help='If set, columns will be broken down into MARC subfields Otherwise, MARC fields will be concatenated with each other, using the "subfield_separator" argument.')
-
-argument_parser.add_argument('--suppress-header-row',
-                             action='store_true',
-                             help='If set, no CSV header row (put differently, no column names) will be included in the output.')
 
 argument_parser.add_argument('-s', 
                              '--subfield-separator',
@@ -36,14 +46,9 @@ argument_parser.add_argument('-s',
                              help='If "--subfields-as-separate-columns" is not set, the separator used when concatenating MARC subfield values together. Default: ";"',
                              default=';')
 
-argument_parser.add_argument('filepath',
-                             action='store',
-                             help='The MARC file to process.')
-
-argument_parser.add_argument('-o',
-                             '--output-file',
-                             action='store',
-                             help='The file to save output to. Default: stdout (i.e., the console output)')
+argument_parser.add_argument('--suppress-header-row',
+                             action='store_true',
+                             help='If set, no CSV header row (put differently, no column names) will be included in the output.')
 
 # Parse the command-line arguments:
 parsed_arguments = argument_parser.parse_args()
@@ -101,7 +106,10 @@ csv_string_of_marc_tags = ','.join(['"%s"' % tag for tag in marc_tags])
 
 if parsed_arguments.output_file is not None:
     # If we have a file to write to, do so:
-    output_file = open(parsed_arguments.output_file, mode='w')
+    if parsed_arguments.append_to_output_file:
+        output_file = open(parsed_arguments.output_file, mode='a')
+    else:
+        output_file = open(parsed_arguments.output_file, mode='w')
 else:
     output_file = sys.stdout
 
