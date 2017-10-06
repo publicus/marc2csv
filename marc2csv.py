@@ -26,6 +26,10 @@ argument_parser.add_argument('--subfields-as-separate-columns',
                              action='store_true',
                              help='If set, columns will be broken down into MARC subfields Otherwise, MARC fields will be concatenated with each other, using the "subfield_separator" argument.')
 
+argument_parser.add_argument('--suppress-header-row',
+                             action='store_true',
+                             help='If set, no CSV header row (put differently, no column names) will be included in the output.')
+
 argument_parser.add_argument('-s', 
                              '--subfield-separator',
                              action='store',
@@ -97,13 +101,17 @@ csv_string_of_marc_tags = ','.join(['"%s"' % tag for tag in marc_tags])
 
 if parsed_arguments.output_file is not None:
     # If we have a file to write to, do so:
-    f = open(parsed_arguments.output_file, mode='w')
-    f.write(csv_string_of_marc_tags)
-    
-    output_file = f
+    output_file = open(parsed_arguments.output_file, mode='w')
 else:
-    print(csv_string_of_marc_tags)
     output_file = sys.stdout
+
+if not parsed_arguments.suppress_header_row:
+    if parsed_arguments.output_file is not None:
+        output_file.write(csv_string_of_marc_tags)
+    else:
+        print(csv_string_of_marc_tags)
+else:
+    logging.debug("Not printing a header row for the output CSV...")
 
 # logging.info('Output file is "'+parsed_arguments.output_file+'"...')    
 
@@ -117,4 +125,4 @@ writer = csv.DictWriter(output_file,
 writer.writerows(csv_records)
 
 if output_file != sys.stdout:
-    f.close
+    output_file.close
