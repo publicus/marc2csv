@@ -27,9 +27,8 @@ for marc_record in reader:
         #print(';'.join('%s' % subject for subject in subjects))
         #print(marc_record)
         
-        # csv_record = {}
+        csv_record = {}
         for marc_field in marc_record.get_fields():
-            print(marc_field.tag)
             if marc_field.tag not in marc_tags:
                 marc_tags.append(marc_field.tag)
             csv_record[marc_field.tag] = marc_field.value().strip()
@@ -38,7 +37,6 @@ for marc_record in reader:
         x = x + 1
     else:
         break
-
 
 
 marc_tags.sort()
