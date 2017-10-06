@@ -31,6 +31,12 @@ i.e.
     cat data1.mrc data2.mrc data3.mrc > data.mrc
     python marc2csv.py data.mrc > data.csv
 
+If you see warning messages such as this:
+
+    couldn't find 0x29 in g0=52 g1=69
+
+Per a [Google Group discussion](https://groups.google.com/forum/#!topic/pymarc/Gued5iyupC0), this output (which comes from the `pymarc` library, is "basically ... a warning that it couldn't translate the MARC8 character properly. Most often this sort of thing is seen when a MARC8 record contains characters from another encoding like Latin-1." In these cases, the output CSV should still be correct.
+
 Output CSV
 ----------
 
@@ -43,20 +49,12 @@ this CSV with OpenOffice or Microsoft Excel.
 
 For more on MARC, see http://www.oclc.org/bibformats/en/default.shtm
 
-It doesn't do X
----------------
-
-It's supposed to be simple.  I wrote, tested, and delivered it in under half an
-hour.
-
-Why?
-----
-
-Because a librarian asked for it.
-
 License & Copyright
 -------------------
 
 Freely available under the GNU General Public License (GPL) v3.  See COPYING.
 
-Copyright (C) 2010 Associated Universities, Inc. Washington DC, USA.
+Copyright (C) the following contributors (listed in reverse chronological order):
+
+- (2017) Jacob Levernier
+- (2010) The Associated Universities, Inc. Washington DC, USA.

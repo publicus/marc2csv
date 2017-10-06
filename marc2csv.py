@@ -2,47 +2,102 @@
 
 import csv
 import sys
-
 from pymarc import MARCReader
+import argparse
+import logging
+import math
 
-filepath = '/home/jacoblevernier/Downloads/BooksAll.2014.part01.marc8/BooksAll.2014.part01.marc8'
-if len(sys.argv) > 1:
-    filepath = sys.argv[1]
+# Settings:
+
+argument_parser = argparse.ArgumentParser(description='Convert MARC records into CSV.')
+
+argument_parser.add_argument("-v",
+                             "--verbose",
+                             action="store_true",
+                             help="Increase verbosity of output.")
+
+argument_parser.add_argument('-n', 
+                             '--max-number-of-records-to-process',
+                             action='store',
+                             help='The maximum number of records that should be processed. This can be useful for debugging or otherwise exploring a dataset. Default: (Infinite)',
+                             default=math.inf)
+
+argument_parser.add_argument('--subfields-as-separate-columns',
+                             action='store_true',
+                             help='If set, columns will be broken down into MARC subfields Otherwise, MARC fields will be concatenated with each other, using the "subfield_separator" argument.')
+
+argument_parser.add_argument('-s', 
+                             '--subfield-separator',
+                             action='store',
+                             help='If "--subfields-as-separate-columns" is not set, the separator used when concatenating MARC subfield values together. Default: ";"',
+                             default=';')
+
+argument_parser.add_argument('filepath',
+                             action='store',
+                             help='The MARC file to process.')
+
+argument_parser.add_argument('-o',
+                             '--output-file',
+                             action='store',
+                             help='The file to save output to. Default: stdout (i.e., the console output)')
+
+# Parse the command-line arguments:
+parsed_arguments = argument_parser.parse_args()
+
+if parsed_arguments.verbose:
+    logging.basicConfig(level=logging.DEBUG)
+    logging.debug("Verbose mode is turned on.")
+else:
+    logging.basicConfig(level=logging.INFO) 
+
+
+# An example for accessing the parsed command-line arguments:
+logging.debug("Maximum number of records to process: " + str(parsed_arguments.max_number_of_records_to_process))
 
 try:
-    reader = MARCReader(open(filepath, mode="rb"), to_unicode=True)   # Per https://groups.google.com/forum/#!topic/pymarc/GtJ7jhP7OGI, "In Python 3, you need to open the file in 'rb' mode, since MARC is a binary format and the Python 3 open() with 'r' mode would do decoding to unicode (called "str" in py3) objects."
+    reader = MARCReader(open(parsed_arguments.filepath, mode="rb"), to_unicode=True)   # Per https://groups.google.com/forum/#!topic/pymarc/GtJ7jhP7OGI, "In Python 3, you need to open the file in 'rb' mode, since MARC is a binary format and the Python 3 open() with 'r' mode would do decoding to unicode (called "str" in py3) objects."
 except IOError:
-    print('cannot open "%s"' % filepath, file=sys.stderr)
+    print('cannot open "%s"' % parsed_arguments.filepath, file=sys.stderr)
     sys.exit(1)
 
 csv_records = []
 marc_tags = []
 
-x = 1
+record_number = 1
 for marc_record in reader:
-    if x < 5:
-        # Per https://groups.google.com/forum/#!topic/pymarc/Gued5iyupC0, if you see a warning like "couldn't find 0x6d in g0=52 g1=69", "What you're seeing isn't really an error....Basically, it's a warning that it couldn't translate the MARC8 character properly. Most often this sort of thing is seen when a MARC8 record contains characters from another encoding like Latin-1."
-        
-        #subjects = marc_record.get_fields('600', '610', '650')
-        #print(';'.join('%s' % subject for subject in subjects))
-        #print(marc_record)
+    if record_number <= int(parsed_arguments.max_number_of_records_to_process):
+        logging.info('Processing record number %s...' %record_number)
         
         csv_record = {}
         for marc_field in marc_record.get_fields():
-            if marc_field.tag not in marc_tags:
-                marc_tags.append(marc_field.tag)
-            csv_record[marc_field.tag] = marc_field.value().strip()
+            for marc_subfield in list(marc_field):
+                marc_subfield_tag = marc_field.tag+marc_subfield[0]
+                if marc_subfield_tag not in marc_tags:
+                    marc_tags.append(marc_subfield_tag)
+                csv_record[marc_subfield_tag] = marc_subfield[1].strip()
         csv_records.append(csv_record)
         
-        x = x + 1
+        record_number = record_number + 1
     else:
         break
 
-
 marc_tags.sort()
 
-print(','.join(['"%s"' % tag for tag in marc_tags]))
-writer = csv.DictWriter(sys.stdout, 
+csv_string_of_marc_tags = ','.join(['"%s"' % tag for tag in marc_tags])
+
+if parsed_arguments.output_file is not None:
+    # If we have a file to write to, do so:
+    f = open(parsed_arguments.output_file, mode='w')
+    f.write(csv_string_of_marc_tags)
+    
+    output_file = f
+else:
+    print(csv_string_of_marc_tags)
+    output_file = sys.stdout
+
+# logging.info('Output file is "'+parsed_arguments.output_file+'"...')    
+
+writer = csv.DictWriter(output_file,
                         fieldnames=marc_tags, 
                         lineterminator='\n', 
                         quotechar='"', 
@@ -50,3 +105,6 @@ writer = csv.DictWriter(sys.stdout,
                         doublequote=False,
                         escapechar='\\')
 writer.writerows(csv_records)
+
+if output_file != sys.stdout:
+    f.close
