@@ -70,11 +70,18 @@ for marc_record in reader:
         
         csv_record = {}
         for marc_field in marc_record.get_fields():
-            for marc_subfield in list(marc_field):
-                marc_subfield_tag = marc_field.tag+marc_subfield[0]
-                if marc_subfield_tag not in marc_tags:
-                    marc_tags.append(marc_subfield_tag)
-                csv_record[marc_subfield_tag] = marc_subfield[1].strip()
+            logging.debug("Processing each MARC subfield as a separate column...")
+            if parsed_arguments.subfields_as_separate_columns:
+                for marc_subfield in list(marc_field):
+                    marc_subfield_tag = marc_field.tag+marc_subfield[0]
+                    if marc_subfield_tag not in marc_tags:
+                        marc_tags.append(marc_subfield_tag)
+                    csv_record[marc_subfield_tag] = marc_subfield[1].strip()
+            else:
+                logging.debug("Processing each MARC subfield in the same column...")
+                if marc_field.tag not in marc_tags:
+                    marc_tags.append(marc_field.tag)
+                csv_record[marc_field.tag] = parsed_arguments.subfield_separator.join(marc_field.value().strip())
         csv_records.append(csv_record)
         
         record_number = record_number + 1
