@@ -63,6 +63,11 @@ except IOError:
 csv_records = []
 marc_tags = []
 
+if parsed_arguments.subfields_as_separate_columns:
+    logging.debug("Processing each MARC subfield as a separate column...")
+else:
+    logging.debug("Processing each MARC subfield in the same column...")
+
 record_number = 1
 for marc_record in reader:
     if record_number <= int(parsed_arguments.max_number_of_records_to_process):
@@ -70,7 +75,6 @@ for marc_record in reader:
         
         csv_record = {}
         for marc_field in marc_record.get_fields():
-            logging.debug("Processing each MARC subfield as a separate column...")
             if parsed_arguments.subfields_as_separate_columns:
                 for marc_subfield in list(marc_field):
                     marc_subfield_tag = marc_field.tag+marc_subfield[0]
@@ -78,7 +82,6 @@ for marc_record in reader:
                         marc_tags.append(marc_subfield_tag)
                     csv_record[marc_subfield_tag] = marc_subfield[1].strip()
             else:
-                logging.debug("Processing each MARC subfield in the same column...")
                 if marc_field.tag not in marc_tags:
                     marc_tags.append(marc_field.tag)
                 csv_record[marc_field.tag] = parsed_arguments.subfield_separator.join([subfield_value[1].strip() for subfield_value in list(marc_field)])
