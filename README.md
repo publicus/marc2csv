@@ -1,19 +1,16 @@
-marc2csv
-========
+# marc2csv
 
-marc2csv - command-line tool to convert a MARC file to an Excel-ready CSV file.
+`marc2csv` - A command-line tool to convert a MARC file to a CSV file.
 
-Overview
---------
+## Overview
 
 This is a simple command-line tool built for Unix-like (POSIX) systems.
 It potentially runs on Windows (for example, with [Git BASH](https://git-for-windows.github.io/)), but has only been tested using Linux.
 It requires Python3 and [pymarc](http://pypi.python.org/pypi/pymarc).
 
-A batch script for GNU bash is also included.
+An example batch script for GNU bash is also included.
 
-Usage
------
+## Usage
 
     python marc2csv.py path/to/data.mrc
 
@@ -79,22 +76,22 @@ If you see warning messages such as this:
 
 Per a [Google Group discussion](https://groups.google.com/forum/#!topic/pymarc/Gued5iyupC0), this output (which comes from the `pymarc` library, is "basically ... a warning that it couldn't translate the MARC8 character properly. Most often this sort of thing is seen when a MARC8 record contains characters from another encoding like Latin-1." In these cases, the output CSV should still be correct.
 
-Output CSV
-----------
+## Output CSV
 
 The output CSV is a spreadsheet which has a column for each MARC tag found in
-the input data.  If a marc record does not have the tag, the corresponding cell
-is empty.  If you want one CSV for multiple marc files, the easiest approach is
-to concatenate all marc files into one before generating the CSV.  (Otherwise
+the input data. **Each MARC subfield can be given its own column** using the `--subfields-as-separate-columns` argument; otherwise, subfields are concatenated in the same column using whatever string is given in the `--subfield-separator` arguement (**note** that if you want subfields to be separated by dashes (`-`, `--`, etc.), you need to use the following syntax: `--subfield-separator='--'`).
+
+If a marc record does not have the tag, the corresponding cell
+is empty. If you want one CSV for multiple marc files, the easiest approach is
+to concatenate all marc files into one before generating the CSV. (Otherwise
 the columns will not likely line up in the output CSV files.)  You can open
 this CSV with OpenOffice or Microsoft Excel.
 
 For more on MARC, see http://www.oclc.org/bibformats/en/default.shtm
 
-License & Copyright
--------------------
+# License & Copyright
 
-Freely available under the GNU General Public License (GPL) v3.  See COPYING.
+Freely available under the GNU General Public License (GPL) v3. See COPYING.
 
 Copyright (C) the following contributors (listed in reverse chronological order):
 

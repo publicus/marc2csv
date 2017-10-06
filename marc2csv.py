@@ -43,7 +43,7 @@ argument_parser.add_argument('--subfields-as-separate-columns',
 argument_parser.add_argument('-s', 
                              '--subfield-separator',
                              action='store',
-                             help='If "--subfields-as-separate-columns" is not set, the separator used when concatenating MARC subfield values together. Default: ";"',
+                             help='If "--subfields-as-separate-columns" is not set, the separator used when concatenating MARC subfield values together. NOTE WELL that if you want subfields to be separated by dashes ("-", "--", etc.), you need to use the following syntax (with a "="): \'--subfield-separator="--"\'. Default: ";"',
                              default=';')
 
 argument_parser.add_argument('--suppress-header-row',
