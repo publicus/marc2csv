@@ -78,8 +78,12 @@ else:
     logging.debug("Processing each MARC subfield in the same column...")
 
 record_number = 1
+
+if parsed_arguments.max_number_of_records_to_process != math.inf:
+    parsed_arguments.max_number_of_records_to_process = int(parsed_arguments.max_number_of_records_to_process)
+
 for marc_record in reader:
-    if record_number <= int(parsed_arguments.max_number_of_records_to_process):
+    if record_number <= parsed_arguments.max_number_of_records_to_process:
         logging.info('Processing record number %s...' %record_number)
         
         csv_record = {}
