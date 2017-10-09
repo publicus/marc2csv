@@ -125,10 +125,9 @@ Copyright (C) the following contributors (listed in reverse chronological order)
 
 - Version number added
 - `--output-long-data` option added, allowing more easily concatenating processed MARC files. This option returns a dataset that has three columns: 
-
-- `random_unique_record_identifier`: A randomly-created identifier for the record, to link all of the output rows that belong to it)
-- `marc_field` (the MARC field; or, if `--subfields-as-separate-columns` is turned on, the MARC field and subfield)
-- `value` (the value of that MARC field)
+    - `random_unique_record_identifier`: A randomly-created identifier for the record, to link all of the output rows that belong to it)
+    - `marc_field` (the MARC field; or, if `--subfields-as-separate-columns` is turned on, the MARC field and subfield)
+    - `value` (the value of that MARC field)
 
 ## (Unversioned) (2017-10-06)
 
