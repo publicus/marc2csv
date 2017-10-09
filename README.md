@@ -6,9 +6,14 @@
 
 This is a simple command-line tool built for Unix-like (POSIX) systems.
 It potentially runs on Windows (for example, with [Git BASH](https://git-for-windows.github.io/)), but has only been tested using Linux.
-It requires Python3 and [pymarc](http://pypi.python.org/pypi/pymarc).
 
-An example batch script for GNU bash is also included.
+It requires the following: 
+
+- Python3 (tested with Python 3.6.1)
+- Python's [pymarc](http://pypi.python.org/pypi/pymarc) library
+- Python's [argparse](https://pypi.python.org/pypi/argparse) library (may come pre-installed with Python)
+
+An example batch script for the Bash command-line is also included.
 
 ## Usage
 
@@ -77,10 +82,14 @@ i.e.
     cat data1.mrc data2.mrc data3.mrc > data.mrc
     python marc2csv.py data.mrc > data.csv
 
-Or, you could use the `-a` / `--append-to-output-file` option, like this:
+Or, if you know the MARC records have the same fields, you could use the `-a` / `--append-to-output-file` option, like this:
 
     python marc2csv.py data1.mrc --output-file example.csv
     python marc2csv.py data2.mrc --output-file example.csv --append-to-output-file --suppress-header-row
+
+See also the `--output-long-data` option.
+
+## Other notes:
 
 If you see warning messages such as this:
 
@@ -109,3 +118,20 @@ Copyright (C) the following contributors (listed in reverse chronological order)
 
 - (2017) Jacob Levernier
 - (2010) The Associated Universities, Inc. Washington DC, USA.
+
+# News
+
+## Version 0.1.1 (2017-10-09)
+
+- Version number added
+- `--output-long-data` option added, allowing more easily concatenating processed MARC files. This option returns a dataset that has three columns: 
+
+- `random_unique_record_identifier`: A randomly-created identifier for the record, to link all of the output rows that belong to it)
+- `marc_field` (the MARC field; or, if `--subfields-as-separate-columns` is turned on, the MARC field and subfield)
+- `value` (the value of that MARC field)
+
+## (Unversioned) (2017-10-06)
+
+- Code forked from @rduplain's [original repository](https://github.com/rduplain/marc2csv).
+- Script brought up-to-date for Python 3 (tested using Python 3.6.1).
+- New command-line interface built using Python's `argparse` package.
