@@ -156,10 +156,7 @@ writer = csv.DictWriter(output_file,
                         escapechar='\\')
 
 if parsed_arguments.output_long_data:
-    for csv_record in csv_records:
-        
-        #print(type(csv_record))
-        
+    for csv_record in csv_records:        
         long_formatted_csv_data = {}
         
         long_formatted_csv_data['random_unique_record_identifier'] = csv_record['random_unique_record_number']
