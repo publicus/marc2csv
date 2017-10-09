@@ -119,8 +119,6 @@ for marc_record in reader:
 
 marc_tags.sort()
 
-csv_string_of_marc_tags = ','.join(['"%s"' % tag for tag in marc_tags])
-
 if parsed_arguments.output_file is not None:
     # If we have a file to write to, do so:
     if parsed_arguments.append_to_output_file:
@@ -130,22 +128,24 @@ if parsed_arguments.output_file is not None:
 else:
     output_file = sys.stdout
 
-if not parsed_arguments.suppress_header_row:
-    if parsed_arguments.output_file is not None:
-        output_file.write(csv_string_of_marc_tags)
-    else:
-        print(csv_string_of_marc_tags)
-else:
-    logging.debug('Not printing a header row for the output CSV...')
-
-# logging.info('Output file is "'+parsed_arguments.output_file+'"...')    
-
 if parsed_arguments.output_long_data:
     output_csv_field_names = ['random_unique_record_identifier',
                               'marc_field',
                               'value']
+    csv_string_of_field_names = ','.join(['"%s"' % tag for tag in output_csv_field_names])
 else: 
     output_csv_field_names = marc_tags
+    csv_string_of_field_names = ','.join(['"%s"' % tag for tag in marc_tags])
+
+if not parsed_arguments.suppress_header_row:
+    if parsed_arguments.output_file is not None:
+        output_file.write(csv_string_of_field_names)
+    else:
+        print(csv_string_of_field_names)
+else:
+    logging.debug('Not printing a header row for the output CSV...')
+
+# logging.info('Output file is "'+parsed_arguments.output_file+'"...')    
 
 writer = csv.DictWriter(output_file,
                         fieldnames=output_csv_field_names,
