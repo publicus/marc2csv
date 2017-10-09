@@ -104,7 +104,7 @@ for marc_record in reader:
         
         if parsed_arguments.output_long_data:
             # If we've been asked to output long-format data, we'll create a random (and thus hopefully unique) ID number for each record. We'll do this instead of using record_number in case multiple datasets get appended.
-            random_unique_record_number = str(uuid.uuid4().fields[0])  # Take just the first part of a UUID string -- hopefully, that will be enough to avoid collisions.
+            random_unique_record_number = str(uuid.uuid4())
             logging.debug('Since the "output-long-data" option is turned on, using the following random (and hopefully unique) ID for this record: "%s"' %random_unique_record_number)
             csv_record['random_unique_record_number'] = random_unique_record_number
         
