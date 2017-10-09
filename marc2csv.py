@@ -27,20 +27,15 @@ argument_parser.add_argument('-n',
                              help='The maximum number of records that should be processed. This can be useful for debugging or otherwise exploring a dataset. Default: (Infinite)',
                              default=math.inf)
 
-argument_parser.add_argument('-o',
-                             '--output-file',
-                             action='store',
-                             help='The file to save output to. Default: stdout (i.e., the console output)')
-
-argument_parser.add_argument('-v',
-                             '--verbose',
-                             action='store_true',
-                             help='Increase verbosity of output.')
-
 argument_parser.add_argument('-l',
                              '--output-long-data',
                              action='store_true',
                              help='Write a "long" (vs. "wide" dataset).')
+
+argument_parser.add_argument('-o',
+                             '--output-file',
+                             action='store',
+                             help='The file to save output to. Default: stdout (i.e., the console output)')
 
 argument_parser.add_argument('--subfields-as-separate-columns',
                              action='store_true',
@@ -55,6 +50,11 @@ argument_parser.add_argument('-s',
 argument_parser.add_argument('--suppress-header-row',
                              action='store_true',
                              help='If set, no CSV header row (put differently, no column names) will be included in the output.')
+
+argument_parser.add_argument('-v',
+                             '--verbose',
+                             action='store_true',
+                             help='Increase verbosity of output.')
 
 # Parse the command-line arguments:
 parsed_arguments = argument_parser.parse_args()
