@@ -141,16 +141,9 @@ else:
 # logging.info('Output file is "'+parsed_arguments.output_file+'"...')    
 
 if parsed_arguments.output_long_data:
-    if parsed_arguments.subfields_as_separate_columns:
-        output_csv_field_names = ['random_unique_record_identifier',
-                                  'marc_field',
-                                  'marc_subfield',
-                                  'value']
-    else:
-        output_csv_field_names = ['random_unique_record_identifier',
-                                  'marc_field',
-                                  'marc_subfield',
-                                  'value']
+    output_csv_field_names = ['random_unique_record_identifier',
+                              'marc_field',
+                              'value']
 else: 
     output_csv_field_names = marc_tags
 
@@ -164,13 +157,16 @@ writer = csv.DictWriter(output_file,
 
 if parsed_arguments.output_long_data:
     for csv_record in csv_records:
+        
+        #print(type(csv_record))
+        
         long_formatted_csv_data = {}
         
         long_formatted_csv_data['random_unique_record_identifier'] = csv_record['random_unique_record_number']
         
-        for subrecord in csv_record:
-            long_formatted_csv_data['marc_field'] = subrecord[0]
-            long_formatted_csv_data['value'] = subrecord[1]  # TODO: Enable subfield support
+        for key, value in [(key, value) for key, value in csv_record.items() if key is not 'random_unique_record_number']:  # Exclude the random ID numbers, since they'll get printed using the 'random_unique_record_number' key above with each row, anyway.
+            long_formatted_csv_data['marc_field'] = key
+            long_formatted_csv_data['value'] = value
             
             writer.writerow(long_formatted_csv_data)
 else:
