@@ -1,4 +1,10 @@
-# Simple marc2csv script.
+"""
+A script to transform MARC records into CSV (wide or long).
+"""
+
+__author__ = "Jacob Levernier (2017), The Associated Universities, Inc. Washington DC, USA (2010)"
+__version__ = "0.1.1"
+__license__ = "GPL-3.0"
 
 import csv
 import sys
@@ -55,6 +61,8 @@ argument_parser.add_argument('-v',
                              '--verbose',
                              action='store_true',
                              help='Increase verbosity of output.')
+
+argument_parser.add_argument('--version', action='version', version=__version__)
 
 # Parse the command-line arguments:
 parsed_arguments = argument_parser.parse_args()

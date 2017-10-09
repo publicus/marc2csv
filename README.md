@@ -20,9 +20,9 @@ You can see the full help documentation output, with a full list of options, usi
     python marc2csv.py path/to/data.mrc --help
 
 ```
-usage: marc2csv.py [-h] [-a] [-n MAX_NUMBER_OF_RECORDS_TO_PROCESS]
-                   [-o OUTPUT_FILE] [-v] [--subfields-as-separate-columns]
-                   [-s SUBFIELD_SEPARATOR] [--suppress-header-row]
+usage: marc2csv.py [-h] [-a] [-n MAX_NUMBER_OF_RECORDS_TO_PROCESS] [-l]
+                   [-o OUTPUT_FILE] [--subfields-as-separate-columns]
+                   [-s SUBFIELD_SEPARATOR] [--suppress-header-row] [-v]
                    filepath
 
 Convert MARC records into CSV.
@@ -40,10 +40,18 @@ optional arguments:
                         The maximum number of records that should be
                         processed. This can be useful for debugging or
                         otherwise exploring a dataset. Default: (Infinite)
+  -l, --output-long-data
+                        Write a "long" (vs. "wide" dataset). The "long"
+                        dataset has three columns:
+                        "random_unique_record_identifier" (a randomly-created
+                        identifier for the record, to link all of the output
+                        rows that belong to it), "marc_field" (the MARC field;
+                        or, if "--subfields-as-separate-columns" is turned on,
+                        the MARC field and subfield), and "value" (the value
+                        of that MARC field).
   -o OUTPUT_FILE, --output-file OUTPUT_FILE
                         The file to save output to. Default: stdout (i.e., the
                         console output)
-  -v, --verbose         Increase verbosity of output.
   --subfields-as-separate-columns
                         If set, columns will be broken down into MARC
                         subfields Otherwise, MARC fields will be concatenated
@@ -52,10 +60,14 @@ optional arguments:
   -s SUBFIELD_SEPARATOR, --subfield-separator SUBFIELD_SEPARATOR
                         If "--subfields-as-separate-columns" is not set, the
                         separator used when concatenating MARC subfield values
-                        together. Default: ";"
+                        together. NOTE WELL that if you want subfields to be
+                        separated by dashes ("-", "--", etc.), you need to use
+                        the following syntax (with a "="): '--subfield-
+                        separator="--"'. Default: ";"
   --suppress-header-row
                         If set, no CSV header row (put differently, no column
                         names) will be included in the output.
+  -v, --verbose         Increase verbosity of output.
 ```
 
 If you have multiple MARC files to convert, you can either use the included
@@ -91,7 +103,7 @@ For more on MARC, see http://www.oclc.org/bibformats/en/default.shtm
 
 # License & Copyright
 
-Freely available under the GNU General Public License (GPL) v3. See COPYING.
+`marc2csv` is released under the GNU General Public License (GPL) v3. See COPYING.
 
 Copyright (C) the following contributors (listed in reverse chronological order):
 
