@@ -30,7 +30,7 @@ argument_parser.add_argument('-n',
 argument_parser.add_argument('-l',
                              '--output-long-data',
                              action='store_true',
-                             help='Write a "long" (vs. "wide" dataset).')
+                             help='Write a "long" (vs. "wide" dataset). The "long" dataset has three columns: "random_unique_record_identifier" (a randomly-created identifier for the record, to link all of the output rows that belong to it), "marc_field" (the MARC field; or, if "--subfields-as-separate-columns" is turned on, the MARC field and subfield), and "value" (the value of that MARC field).')
 
 argument_parser.add_argument('-o',
                              '--output-file',
