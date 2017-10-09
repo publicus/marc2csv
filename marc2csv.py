@@ -31,10 +31,15 @@ argument_parser.add_argument('-o',
                              action='store',
                              help='The file to save output to. Default: stdout (i.e., the console output)')
 
-argument_parser.add_argument("-v",
-                             "--verbose",
-                             action="store_true",
-                             help="Increase verbosity of output.")
+argument_parser.add_argument('-v',
+                             '--verbose',
+                             action='store_true',
+                             help='Increase verbosity of output.')
+
+argument_parser.add_argument('-l',
+                             '--long-data',
+                             action='store_true',
+                             help='Write a "long" (vs. "wide" dataset).')
 
 argument_parser.add_argument('--subfields-as-separate-columns',
                              action='store_true',
