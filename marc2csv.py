@@ -6,12 +6,13 @@ __author__ = "Jacob Levernier (2017), The Associated Universities, Inc. Washingt
 __version__ = "0.1.1"
 __license__ = "GPL-3.0"
 
-import csv
-import sys
-from pymarc import MARCReader
 import argparse
+from collections import defaultdict
+import csv
 import logging
 import math
+from pymarc import MARCReader
+import sys
 import uuid
 
 # Settings:
@@ -26,6 +27,12 @@ argument_parser.add_argument('-a',
                              '--append-to-output-file',
                              action='store_true',
                              help='If set, an output file defined using the "--output-file" argument will be appended to, instead of overwritten.')
+
+argument_parser.add_argument('-f', 
+                             '--field-separator',
+                             action='store',
+                             help='If "--output-long-data" is not set, the separator used when concatenating duplicate MARC fields\' values together. NOTE WELL that if you want fields to be separated by dashes ("-", "--", etc.), you need to use the following syntax (with a "="): \'--field-separator="--"\'. Default: "|"',
+                             default='|')
 
 argument_parser.add_argument('-n', 
                              '--max-number-of-records-to-process',
@@ -100,13 +107,15 @@ for marc_record in reader:
     if record_number <= parsed_arguments.max_number_of_records_to_process:
         logging.info('Processing record number %s...' %record_number)
         
-        csv_record = {}
+        # Following https://stackoverflow.com/a/10664876/1940466, use a defaultdict instead of a normal dictionary to store duplicate MARC fields:
+        # csv_record = {}
+        csv_record = defaultdict(list)
         
         if parsed_arguments.output_long_data:
             # If we've been asked to output long-format data, we'll create a random (and thus hopefully unique) ID number for each record. We'll do this instead of using record_number in case multiple datasets get appended.
             random_unique_record_number = str(uuid.uuid4())
             logging.debug('Since the "output-long-data" option is turned on, using the following random (and hopefully unique) ID for this record: "%s"' %random_unique_record_number)
-            csv_record['random_unique_record_number'] = random_unique_record_number
+            csv_record['random_unique_record_number'].append(random_unique_record_number)
         
         for marc_field in marc_record.get_fields():
             if parsed_arguments.subfields_as_separate_columns:
@@ -114,12 +123,22 @@ for marc_record in reader:
                     marc_subfield_tag = marc_field.tag+marc_subfield[0]
                     if marc_subfield_tag not in marc_tags:
                         marc_tags.append(marc_subfield_tag)
-                    csv_record[marc_subfield_tag] = marc_subfield[1].strip()
+                    csv_record[marc_subfield_tag].append(marc_subfield[1].strip())
             else:
                 if marc_field.tag not in marc_tags:
                     marc_tags.append(marc_field.tag)
-                csv_record[marc_field.tag] = parsed_arguments.subfield_separator.join([subfield_value[1].strip() for subfield_value in list(marc_field)])
-        csv_records.append(csv_record)
+                csv_record[marc_field.tag].append(parsed_arguments.subfield_separator.join([subfield_value[1].strip() for subfield_value in list(marc_field)]))
+                
+        if parsed_arguments.output_long_data:
+            csv_record_to_append = csv_record
+        else:
+            # We'll here concatenate any duplicate marc field entries:
+            csv_record_to_append = {}
+            
+            for key, values in csv_record.items():
+                csv_record_to_append[key] = parsed_arguments.field_separator.join([value.strip() for value in values])
+        
+        csv_records.append(csv_record_to_append)
         
         record_number = record_number + 1
     else:
@@ -164,16 +183,17 @@ writer = csv.DictWriter(output_file,
                         escapechar='\\')
 
 if parsed_arguments.output_long_data:
-    for csv_record in csv_records:        
+    for csv_record in csv_records:
         long_formatted_csv_data = {}
         
-        long_formatted_csv_data['random_unique_record_identifier'] = csv_record['random_unique_record_number']
+        long_formatted_csv_data['random_unique_record_identifier'] = csv_record['random_unique_record_number'][0]
         
-        for key, value in [(key, value) for key, value in csv_record.items() if key is not 'random_unique_record_number']:  # Exclude the random ID numbers, since they'll get printed using the 'random_unique_record_number' key above with each row, anyway.
-            long_formatted_csv_data['marc_field'] = key
-            long_formatted_csv_data['value'] = value
-            
-            writer.writerow(long_formatted_csv_data)
+        for key, values in [(key, values) for key, values in csv_record.items() if key is not 'random_unique_record_number']:  # Exclude the random ID numbers, since they'll get printed using the 'random_unique_record_number' key above with each row, anyway.
+            for value in values:  # Using the datadict above when originally writing csv_records, each record *may* contain duplicate MARC fields. So we are here separating those back out.
+                long_formatted_csv_data['marc_field'] = key
+                long_formatted_csv_data['value'] = value
+                
+                writer.writerow(long_formatted_csv_data)
 else:
     writer.writerows(csv_records)
 
