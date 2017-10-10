@@ -118,17 +118,18 @@ for marc_record in reader:
             csv_record['random_unique_record_number'].append(random_unique_record_number)
         
         for marc_field in marc_record.get_fields():
-            if parsed_arguments.subfields_as_separate_columns:
-                for marc_subfield in list(marc_field):
-                    marc_subfield_tag = marc_field.tag+marc_subfield[0]
-                    if marc_subfield_tag not in marc_tags:
-                        marc_tags.append(marc_subfield_tag)
-                    csv_record[marc_subfield_tag].append(marc_subfield[1].strip())
-            else:
-                if marc_field.tag not in marc_tags:
-                    marc_tags.append(marc_field.tag)
-                csv_record[marc_field.tag].append(parsed_arguments.subfield_separator.join([subfield_value[1].strip() for subfield_value in list(marc_field)]))
-        
+            marc_field_tag = marc_field.tag+marc_subfield[0]  # We'll overwrite this below if necessary.
+            
+            for marc_subfield_tag, marc_subfield_value in list(marc_field):
+                if parsed_arguments.subfields_as_separate_columns:
+                    csv_record[marc_field_tag].append(marc_subfield[1].strip())
+                else:
+                    marc_field_tag = marc_field.tag
+                    csv_record[marc_field.tag].append(parsed_arguments.subfield_separator.join([marc_subfield_value.strip()))
+                
+                if marc_field_tag not in marc_tags:
+                    marc_tags.append(marc_field_tag)
+    
         if parsed_arguments.output_long_data:
             csv_record_to_append = csv_record
         else:
