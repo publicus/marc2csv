@@ -121,6 +121,10 @@ Copyright (C) the following contributors (listed in reverse chronological order)
 
 # News
 
+## Version 0.1.2 (2017-10-10)
+
+- Added support for duplicate MARC fields / subfields.
+
 ## Version 0.1.1 (2017-10-09)
 
 - Version number added
