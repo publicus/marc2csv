@@ -128,7 +128,7 @@ for marc_record in reader:
                 if marc_field.tag not in marc_tags:
                     marc_tags.append(marc_field.tag)
                 csv_record[marc_field.tag].append(parsed_arguments.subfield_separator.join([subfield_value[1].strip() for subfield_value in list(marc_field)]))
-                
+        
         if parsed_arguments.output_long_data:
             csv_record_to_append = csv_record
         else:
