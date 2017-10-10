@@ -28,10 +28,10 @@ argument_parser.add_argument('-a',
                              action='store_true',
                              help='If set, an output file defined using the "--output-file" argument will be appended to, instead of overwritten.')
 
-argument_parser.add_argument('-f', 
-                             '--field-separator',
+argument_parser.add_argument('-d', 
+                             '--duplicate-separator',
                              action='store',
-                             help='If "--output-long-data" is not set, the separator used when concatenating duplicate MARC fields\' values together. NOTE WELL that if you want fields to be separated by dashes ("-", "--", etc.), you need to use the following syntax (with a "="): \'--field-separator="--"\'. Default: "|"',
+                             help='If "--output-long-data" is not set, the separator used when concatenating duplicate MARC fields\' / subfields\' values together. NOTE WELL that if you want fields to be separated by dashes ("-", "--", etc.), you need to use the following syntax (with a "="): \'--field-separator="--"\'. Default: "|"',
                              default='|')
 
 argument_parser.add_argument('-n', 
@@ -43,21 +43,21 @@ argument_parser.add_argument('-n',
 argument_parser.add_argument('-l',
                              '--output-long-data',
                              action='store_true',
-                             help='Write a "long" (vs. "wide" dataset). The "long" dataset has three columns: "random_unique_record_identifier" (a randomly-created identifier for the record, to link all of the output rows that belong to it), "marc_field" (the MARC field; or, if "--subfields-as-separate-columns" is turned on, the MARC field and subfield), and "value" (the value of that MARC field).')
+                             help='Write a "long" (vs. "wide" dataset). The "long" dataset has three columns: "random_unique_record_identifier" (a randomly-created identifier for the record, to link all of the output rows that belong to it), "marc_field" (the MARC field; or, if "--subfields-as-separate" is turned on, the MARC field and subfield), and "value" (the value of that MARC field).')
 
 argument_parser.add_argument('-o',
                              '--output-file',
                              action='store',
                              help='The file to save output to. Default: stdout (i.e., the console output)')
 
-argument_parser.add_argument('--subfields-as-separate-columns',
+argument_parser.add_argument('--subfields-as-separate',
                              action='store_true',
                              help='If set, columns will be broken down into MARC subfields Otherwise, MARC fields will be concatenated with each other, using the "--subfield-separator" argument.')
 
 argument_parser.add_argument('-s', 
                              '--subfield-separator',
                              action='store',
-                             help='If "--subfields-as-separate-columns" is not set, the separator used when concatenating MARC subfield values together. NOTE WELL that if you want subfields to be separated by dashes ("-", "--", etc.), you need to use the following syntax (with a "="): \'--subfield-separator="--"\'. Default: ";"',
+                             help='If "--subfields-as-separate" is not set, the separator used when concatenating MARC subfield values together. NOTE WELL that if you want subfields to be separated by dashes ("-", "--", etc.), you need to use the following syntax (with a "="): \'--subfield-separator="--"\'. Default: ";"',
                              default=';')
 
 argument_parser.add_argument('--suppress-header-row',
@@ -93,7 +93,7 @@ except IOError:
 csv_records = []
 marc_tags = []
 
-if parsed_arguments.subfields_as_separate_columns:
+if parsed_arguments.subfields_as_separate:
     logging.debug('Processing each MARC subfield as a separate column...')
 else:
     logging.debug('Processing each MARC subfield in the same column...')
@@ -118,7 +118,7 @@ for marc_record in reader:
             csv_record['random_unique_record_number'].append(random_unique_record_number)
         
         for marc_field in marc_record.get_fields():
-            if parsed_arguments.subfields_as_separate_columns:
+            if parsed_arguments.subfields_as_separate:
                 for marc_subfield_key, marc_subfield_value in list(marc_field):
                     marc_subfield_tag = marc_field.tag+marc_subfield_key
                     if marc_subfield_tag not in marc_tags:
@@ -136,7 +136,7 @@ for marc_record in reader:
             csv_record_to_append = {}
             
             for key, values in csv_record.items():
-                csv_record_to_append[key] = parsed_arguments.field_separator.join([value.strip() for value in values])
+                csv_record_to_append[key] = parsed_arguments.duplicate_separator.join([value.strip() for value in values])
         
         csv_records.append(csv_record_to_append)
         
